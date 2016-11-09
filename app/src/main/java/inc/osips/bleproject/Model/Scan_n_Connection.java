@@ -9,7 +9,6 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import inc.osips.bleproject.Controller.ControllerActivity;
-import inc.osips.bleproject.Utilities.BT_Compatibility_Checker;
+import inc.osips.bleproject.Utilities.HW_Compatibility_Checker;
 import inc.osips.bleproject.Utilities.ToastMessages;
-
-/**
- * Created by BABY v2.0 on 10/24/2016.
- */
 
 public class Scan_n_Connection {
 
@@ -38,7 +33,7 @@ public class Scan_n_Connection {
 
     private boolean scanState;
     private String deviceName;
-    Bundle extras;
+    private Bundle extras;
 
     public Scan_n_Connection(){
         ca = new ControllerActivity();
@@ -67,8 +62,8 @@ public class Scan_n_Connection {
     }
 
     public void onStart() {
-        if (!BT_Compatibility_Checker.checkBluetooth(bleAdapter)) {
-            BT_Compatibility_Checker.requestUserBluetooth(ca);
+        if (!HW_Compatibility_Checker.checkBluetooth(bleAdapter)) {
+            HW_Compatibility_Checker.requestUserBluetooth(ca);
         } else {
             ToastMessages.message(ca.getApplicationContext(), "Tap to Connect");
         }
@@ -109,7 +104,7 @@ public class Scan_n_Connection {
             }
         }
         else{
-//        ToastMakers.message(ma.getApplicationContext(), "Scanning Stopped!");
+        ToastMessages.message(ca.getApplicationContext(), "Scanning Stopped!");
         }
     }
 

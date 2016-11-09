@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 
-/**
- * Created by BABY v2.0 on 10/24/2016.
- */
+import static android.content.Context.SENSOR_SERVICE;
 
-public class BT_Compatibility_Checker {
+
+public class HW_Compatibility_Checker {
 
     private Context context;
     public static final int REQUEST_ENABLE_BT =1;
@@ -33,5 +34,14 @@ public class BT_Compatibility_Checker {
 
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT );
+    }
+
+
+    public static boolean checkForAccelerometer (Context activity){
+        SensorManager sm = (SensorManager)activity.getSystemService(SENSOR_SERVICE);
+        if (sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size()!=0){
+            return true;
+        }
+        return false;
     }
 }
