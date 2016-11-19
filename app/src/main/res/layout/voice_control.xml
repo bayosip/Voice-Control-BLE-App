@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:text="Click Button to Speak:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInstruction"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:src="@drawable/ic_action_mic"
+        android:id="@+id/buttonSpeak"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/textViewInstruction"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="You said: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:id="@+id/textViewInterpret"
+        android:layout_below="@+id/buttonSpeak"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

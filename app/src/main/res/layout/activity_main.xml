@@ -10,11 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="inc.osips.bleproject.Controller.ControllerActivity">
 
-    <Button
-        android:text="Connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:src="@drawable/ic_action_connect"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/buttonConnect" />
+
+    <TextView
+        android:text="Press Button to Connect to System."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonConnect"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="23dp"
+        android:id="@+id/textView2" />
 </RelativeLayout>
