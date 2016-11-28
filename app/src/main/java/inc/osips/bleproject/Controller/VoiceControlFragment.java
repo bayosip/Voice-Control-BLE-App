@@ -45,6 +45,7 @@ public class VoiceControlFragment extends Fragment {
         });
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         switch (requestCode){
