@@ -16,7 +16,8 @@
         android:layout_height="85dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/buttonConnect" />
+        android:id="@+id/buttonConnect"
+        android:elevation="5dp" />
 
     <TextView
         android:text="Press Button to Connect to System."

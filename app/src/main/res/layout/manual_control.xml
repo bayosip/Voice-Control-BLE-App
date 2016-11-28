@@ -8,7 +8,8 @@
         android:layout_height="70dp"
         android:id="@+id/buttonNext"
         android:layout_alignTop="@+id/buttonOnoff"
-        android:layout_toEndOf="@+id/buttonOnoff" />
+        android:layout_toEndOf="@+id/buttonOnoff"
+        android:elevation="3dp" />
 
     <ImageButton
         android:src="@drawable/ic_action_back"
@@ -16,7 +17,8 @@
         android:layout_height="70dp"
         android:id="@+id/buttonBack"
         android:layout_alignTop="@+id/buttonOnoff"
-        android:layout_toStartOf="@+id/buttonOnoff" />
+        android:layout_toStartOf="@+id/buttonOnoff"
+        android:elevation="3dp" />
 
     <ImageButton
         android:src="@drawable/ic_action_dark"
@@ -24,7 +26,8 @@
         android:layout_height="70dp"
         android:id="@+id/buttonDark"
         android:layout_below="@+id/buttonBack"
-        android:layout_toEndOf="@+id/buttonBack" />
+        android:layout_toEndOf="@+id/buttonBack"
+        android:elevation="3dp" />
 
     <ImageButton
         android:src="@drawable/ic_action_light_off"
@@ -32,7 +35,8 @@
         android:layout_height="70dp"
         android:id="@+id/buttonOnoff"
         android:layout_below="@+id/buttonBright"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:elevation="3dp" />
 
     <TextView
         android:text="Manual Control"
@@ -50,5 +54,6 @@
         android:id="@+id/buttonBright"
         android:layout_marginTop="11dp"
         android:layout_below="@+id/textView"
-        android:layout_toEndOf="@+id/buttonBack" />
+        android:layout_toEndOf="@+id/buttonBack"
+        android:elevation="4dp" />
 </RelativeLayout>

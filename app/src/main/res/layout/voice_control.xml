@@ -18,7 +18,8 @@
         android:id="@+id/buttonSpeak"
         android:layout_marginTop="15dp"
         android:layout_below="@+id/textViewInstruction"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:elevation="3dp" />
 
     <TextView
         android:text="You said: "
