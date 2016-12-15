@@ -1,6 +1,7 @@
 package inc.osips.bleproject.Controller;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -10,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import java.util.ArrayList;
+import java.util.Locale;
+
+import inc.osips.bleproject.Interfaces.FragmentListner;
 import inc.osips.bleproject.Model.VoiceRecognition;
 import inc.osips.bleproject.R;
 import inc.osips.bleproject.Utilities.ToastMessages;
@@ -21,6 +25,18 @@ public class VoiceControlFragment extends Fragment {
 
     private ImageButton buttonSpeak;
     private TextView interpretedText;
+    FragmentListner fragListner;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            fragListner = (FragmentListner) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException(context.toString());
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -53,7 +69,10 @@ public class VoiceControlFragment extends Fragment {
                 if ((resultCode == RESULT_OK)&& (intent!=null)){
                     ArrayList<String> instructions = intent.getStringArrayListExtra(
                             RecognizerIntent.EXTRA_RESULTS);
-                    interpretedText.setText("You said: " + instructions.get(0));
+                    String toText = instructions.get(0).toLowerCase(Locale.getDefault());
+                    fragListner.sendInstructions(toText);
+                    interpretedText.setText("You said: " + toText);
+
                 }
                 break;
         }super.onActivityResult(requestCode, resultCode, intent);

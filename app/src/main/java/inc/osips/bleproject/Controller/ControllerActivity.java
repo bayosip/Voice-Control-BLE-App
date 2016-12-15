@@ -15,14 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import inc.osips.bleproject.Interfaces.FragmentListner;
 import inc.osips.bleproject.R;
-import inc.osips.bleproject.Services.GattService;
+import inc.osips.bleproject.Services.BleGattService;
+import inc.osips.bleproject.Utilities.ToastMessages;
 
-public class ControllerActivity extends AppCompatActivity {
+public class ControllerActivity extends AppCompatActivity implements FragmentListner {
 
-    private GattService gattService;
+    private BleGattService gattService;
     private BluetoothDevice device;
     private ScanResult result;
+
     Handler commsHandler;
     private boolean mBound = false;
     private static final String TAG = ControllerActivity.class.getSimpleName();
@@ -32,6 +35,9 @@ public class ControllerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         commsHandler = new Handler();
+        result = getIntent().getExtras()
+                .getParcelable("Device Data");
+
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -40,14 +46,14 @@ public class ControllerActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             Log.i(TAG, "binding services");
-            GattService.BTLeServiceBinder binder = (GattService.BTLeServiceBinder) service;
+            BleGattService.BTLeServiceBinder binder = (BleGattService.BTLeServiceBinder) service;
             gattService = binder.getService();
             mBound = true;
             if (Build.VERSION.SDK_INT >= 21) {
                 getDEviceAndConnect();
             }
             else {
-                getDeviceAndConnectLowerAPI();
+                ToastMessages.message(getApplicationContext(), "API too low for app!");
             }
         }
 
@@ -72,7 +78,7 @@ public class ControllerActivity extends AppCompatActivity {
         super.onStart();
         // Bind to LocalService
         Log.i(TAG, "starting service");
-        Intent intent = new Intent(this, GattService.class);
+        Intent intent = new Intent(this, BleGattService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -113,28 +119,18 @@ public class ControllerActivity extends AppCompatActivity {
         }
     }
 
-    private void getDeviceAndConnectLowerAPI(){
-        device = getIntent().getExtras().getParcelable("My Device");
-        if (makeConnectionBLE(device)){
-            return;
-        }
-        else {
-            startActivity(new Intent (ControllerActivity.this, MainActivity.class));
-        }
-    }
-
     private final BroadcastReceiver commsUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             switch (action) {
-                case GattService.ACTION_CONNECTED:
+                case BleGattService.ACTION_CONNECTED:
                     // No need to do anything here. Service discovery is started by the service.
                     break;
-                case GattService.ACTION_DISCONNECTED:
+                case BleGattService.ACTION_DISCONNECTED:
                     gattService.close();
                     break;
-                case GattService.ACTION_DATA_AVAILABLE:
+                case BleGattService.ACTION_DATA_AVAILABLE:
                     // This is called after a Notify completes
                     break;
             }
@@ -154,9 +150,15 @@ public class ControllerActivity extends AppCompatActivity {
      */
     private static IntentFilter commsUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(GattService.ACTION_CONNECTED);
-        intentFilter.addAction(GattService.ACTION_DISCONNECTED);
-        intentFilter.addAction(GattService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(BleGattService.ACTION_CONNECTED);
+        intentFilter.addAction(BleGattService.ACTION_DISCONNECTED);
+        intentFilter.addAction(BleGattService.ACTION_DATA_AVAILABLE);
         return intentFilter;
+    }
+
+    @Override
+    public void sendInstructions(String instruct) {
+
+        gattService.writeLEDInstructions(instruct);
     }
 }

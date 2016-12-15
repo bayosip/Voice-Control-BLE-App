@@ -9,15 +9,19 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import inc.osips.bleproject.Controller.ControllerActivity;
+import inc.osips.bleproject.Controller.MainActivity;
 import inc.osips.bleproject.Utilities.HW_Compatibility_Checker;
 import inc.osips.bleproject.Utilities.ToastMessages;
 
@@ -29,20 +33,25 @@ public class Scan_n_Connection {
     private Handler scanHandler;
     private ScanSettings settings;
     private List<ScanFilter> filters;
-    private ControllerActivity ca;
+    private MainActivity ma;
 
     private boolean scanState;
-    private String deviceName;
+    private String deviceName = "Bayo's BLE-LED Controller";
+    private final String baseUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
     private Bundle extras;
+    private ParcelUuid uuidParcel;
+    //UUID uuid;
 
     public Scan_n_Connection(){
-        ca = new ControllerActivity();
+        ma = new MainActivity();
         scanHandler = new Handler();
         // dbAdapter = new DatabaseAdapter(ma.getApplicationContext());
-        final BluetoothManager manager = (BluetoothManager) ca.getSystemService(
+        final BluetoothManager manager = (BluetoothManager) ma.getSystemService(
                 Context.BLUETOOTH_SERVICE);
 
         bleAdapter = manager.getAdapter();
+        extras = new Bundle();
+        uuidParcel = new ParcelUuid(UUID.fromString(baseUUID));
 
         if (Build.VERSION.SDK_INT >= 21) {
             bluetoothLeScanner = bleAdapter.getBluetoothLeScanner();
@@ -50,7 +59,7 @@ public class Scan_n_Connection {
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .build();
         }
-        extras = new Bundle();
+
     }
 
     public Handler getHandler() {
@@ -63,27 +72,29 @@ public class Scan_n_Connection {
 
     public void onStart() {
         if (!HW_Compatibility_Checker.checkBluetooth(bleAdapter)) {
-            HW_Compatibility_Checker.requestUserBluetooth(ca);
-        } else {
-            ToastMessages.message(ca.getApplicationContext(), "Tap to Connect");
+            HW_Compatibility_Checker.requestUserBluetooth(ma);
         }
-    }
-
-    public void setDeviceName(String dName) {
-        this.deviceName = dName;
+        scanForBLEDevices(true);
     }
 
     public void onStop() {
         scanForBLEDevices(false);
     }
 
-    public void scanForBLEDevices(Boolean yes) {
+    private void scanForBLEDevices(Boolean yes) {
         if (yes && !scanState) {
-            ScanFilter savedDevices = new ScanFilter.Builder()
-                    .setDeviceName(deviceName).build();
-            Log.d("FFS: ", deviceName);
-            filters = new ArrayList<ScanFilter>();
-            filters.add(savedDevices);
+            ScanFilter myDevice = new ScanFilter.Builder()
+                    .setServiceUuid(uuidParcel).build();
+            Log.d("Device UUID ", uuidParcel.toString());
+            filters = new ArrayList<>();
+            if (myDevice !=null){
+            filters.add(myDevice);
+            }
+            else {
+                myDevice = new ScanFilter.Builder()
+                        .setDeviceName(deviceName).build();
+                filters.add(myDevice);
+            }
             //start scan
             scanHandler.postDelayed(new Runnable() {
                 @Override
@@ -104,7 +115,7 @@ public class Scan_n_Connection {
             }
         }
         else{
-        ToastMessages.message(ca.getApplicationContext(), "Scanning Stopped!");
+        ToastMessages.message(ma.getApplicationContext(), "Scanning Stopped!");
         }
     }
 
@@ -122,9 +133,8 @@ public class Scan_n_Connection {
                 scanHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        bleDevice = result.getDevice();
-                       // ca.startActivity(new Intent(ma, CommunicationActivity.class)
-                          //      .putExtra("Device Data", result));
+                       ma.startActivity(new Intent(ma, ControllerActivity.class)
+                               .putExtra("Device Data", result));
                     }
                 });
             }
@@ -153,7 +163,7 @@ public class Scan_n_Connection {
                         scanHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                              //  ca.startActivity(new Intent(ma, CommunicationActivity.class)
+                              //  ma.startActivity(new Intent(ma, CommunicationActivity.class)
                                //         .putExtra("Device Name", device));
                             }
                         });

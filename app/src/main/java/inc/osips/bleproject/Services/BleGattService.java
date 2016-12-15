@@ -24,15 +24,14 @@ import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 
-import inc.osips.bleproject.Utilities.BLE_Properties;
 import inc.osips.bleproject.Utilities.ToastMessages;
 
 /**
  * Created by BABY v2.0 on 10/11/2016.
  */
 
-public class GattService extends Service {
-    private final static String TAG = GattService.class.getSimpleName();
+public class BleGattService extends Service {
+    private final static String TAG = BleGattService.class.getSimpleName();
     private BluetoothGatt bleGatt;
     private boolean hasService;
     private BluetoothManager bManager;
@@ -45,25 +44,31 @@ public class GattService extends Service {
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
+    private static boolean mLedSwitchState = false;
 
     public final static String ACTION_CONNECTED =
-            "inc.osips.bleproject.Services.GattService.ACTION_CONNECTED";
+            "inc.osips.bleproject.Services.BleGattService.ACTION_CONNECTED";
     public final static String ACTION_DISCONNECTED =
-            "inc.osips.bleproject.Services.GattService.ACTION_DISCONNECTED";
+            "inc.osips.bleproject.Services.BleGattService.ACTION_DISCONNECTED";
     public final static String ACTION_BLE_SERVICES_DISCOVERED =
-            "inc.osips.bleproject.Services.GattService.ACTION_BLE_SERVICES_DISCOVERED";
+            "inc.osips.bleproject.Services.BleGattService.ACTION_BLE_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
-            "inc.osips.bleproject.Services.GattService.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA = "inc.osips.bleproject.Services.GattService.EXTRA_DATA";
+            "inc.osips.bleproject.Services.BleGattService.ACTION_DATA_AVAILABLE";
+    public final static String EXTRA_DATA = "inc.osips.bleproject.Services.BleGattService.EXTRA_DATA";
     public  String EXTRA_UUID;
+
+    public final String serviceUUID = "fe33e680-e20b-11e5-aa34-0002a5d5c51b";
+    public final String writeUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
+    public final String readUUID  = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
     int mydata;
     String MyLogData;
 
     private BluetoothGattCharacteristic myWriteCharx;
     private BluetoothGattCharacteristic myReadCharx;
+
     public class BTLeServiceBinder extends Binder {
-        public GattService getService(){
-            return GattService.this;
+        public BleGattService getService(){
+            return BleGattService.this;
         }
     }
 
@@ -134,8 +139,12 @@ public class GattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_BLE_SERVICES_DISCOVERED);
 
+                BluetoothGattService myGattService = gatt.getService(UUID.fromString(serviceUUID));
+                myWriteCharx = myGattService.getCharacteristic(UUID.fromString(writeUUID));
+                myReadCharx = myGattService.getCharacteristic(UUID.fromString(readUUID));
+                broadcastUpdate(ACTION_BLE_SERVICES_DISCOVERED);
+                readLedCharacteristic();
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
                 MyLogData += "onServicesDiscovered received: " + status+ "\n";
@@ -156,7 +165,6 @@ public class GattService extends Service {
         /**
          * This is called when a characteristic write has completed. Is uses a queue to determine if
          * additional BLE actions are still pending and launches the next one if there are.
-         *
          * @param gatt The GATT database object
          * @param characteristic The characteristic that was written.
          * @param status Status of whether the write was successful.
@@ -173,7 +181,6 @@ public class GattService extends Service {
                 handleBleQueue();
             }
         }
-
 
         /**
          * This is called when a characteristic with notify set changes.
@@ -251,12 +258,6 @@ public class GattService extends Service {
         return true;
     }
 
-    public boolean deviceIsConnected(BluetoothGatt gatt){
-        if (gatt !=null)
-            return true;
-        else return false;
-    }
-
     /**
      * Disconnects an existing connection or cancel a pending connection. The disconnection result
      * is reported asynchronously through the
@@ -268,10 +269,10 @@ public class GattService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             ToastMessages.message(getApplicationContext(), "No Device Connect!");
         }
-        else if (bleGatt != null){
+        else {
             bleGatt.disconnect();
-            close();
-            bleGatt = null;
+            //close();
+            //bleGatt = null;
             ToastMessages.message(getApplicationContext(), "Disconnecting...");
         }
     }
@@ -286,51 +287,10 @@ public class GattService extends Service {
         bleGatt.close();
     }
 
-
-    public void getACharXandWriteToIt(int value, ScanResult result) {
-        Log.i(TAG, "This is result:: " + result.toString());
-        List<ParcelUuid> serviceUUIDs = result.getScanRecord().getServiceUuids();
-        ArrayList<BluetoothGattService> services = new ArrayList<>();
-        List<BluetoothGattCharacteristic> characteristics;
-
-        ArrayList<UUID> uuidServiceList = new ArrayList<>();
-        for (ParcelUuid pUUIDx : serviceUUIDs){
-            uuidServiceList.add(pUUIDx.getUuid());
-            Log.i(TAG, uuidServiceList.toString());
-        }
-        for (UUID serviceUUIDx: uuidServiceList){
-            Log.i(TAG, "services are: "+ serviceUUIDx.toString());
-            MyLogData +="services are: "+ serviceUUIDx.toString()+"\n";
-            BluetoothGattService service = bleGatt.getService(serviceUUIDx);
-            if (service!=null) {
-                characteristics = service.getCharacteristics();
-                services.add(service);
-                for (BluetoothGattCharacteristic characteristic : characteristics) {
-                    if(characteristic!=null){
-                        Log.i(TAG, "CharX:: " + characteristic.toString());
-                        MyLogData += "CharX:: " + characteristic.toString()+"\n";
-                        Log.i(TAG, "Charx UUID:: " + characteristic.getUuid().toString());
-                        MyLogData += "Charx UUID:: " + characteristic.getUuid().toString()+"\n";
-                        Log.i(TAG, "Charx write type:: " + characteristic.getProperties());
-
-
-                      /*  Log.i(TAG, "Write no response:: " +
-                                BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE);
-                        Log.i(TAG, "Write:: " +
-                                BluetoothGattCharacteristic.PROPERTY_WRITE);
-                        Log.i(TAG, "Notify:: " +
-                                BluetoothGattCharacteristic.PROPERTY_NOTIFY);
-                        Log.i(TAG, "Read:: " +
-                                BluetoothGattCharacteristic.PROPERTY_READ);*/
-                        if (characteristic.getWriteType() == 1){
-                            MyLogData += "Write data: " + value + "\n";
-                            characteristic.setValue(value,BluetoothGattCharacteristic.FORMAT_SINT8, 0);
-                            writeCharacteristic(characteristic);
-                        }
-                    }
-                }
-            }
-        }
+    public void writeLEDInstructions(String instruct) {
+        byte[] bytes = instruct.getBytes();
+        myWriteCharx.setValue(instruct);
+        writeCharacteristic(myWriteCharx);
     }
 
     /**
@@ -348,6 +308,17 @@ public class GattService extends Service {
             bleGatt.writeCharacteristic(characteristic);
             Log.i(TAG, "Writing Characteristic");
         }
+    }
+
+    /**
+     * This method is used to read the state of the LED from the device
+     */
+    public void readLedCharacteristic() {
+        if (bAdapter == null || bleGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        bleGatt.readCharacteristic(myReadCharx);
     }
 
     /**
