@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">All of The Lights</string>
+    <string name="app_instructions">Press Button to Connect to System.</string>
 </resources>

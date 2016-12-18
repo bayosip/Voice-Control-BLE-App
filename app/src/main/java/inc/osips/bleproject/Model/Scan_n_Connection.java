@@ -129,7 +129,7 @@ public class Scan_n_Connection {
             Log.i("callbackType", String.valueOf(callbackType));
             Log.i("result", result.toString());
             final int RSSI = result.getRssi();
-            if (RSSI>=-85) {
+            if (RSSI>=-105) {
                 scanHandler.post(new Runnable() {
                     @Override
                     public void run() {

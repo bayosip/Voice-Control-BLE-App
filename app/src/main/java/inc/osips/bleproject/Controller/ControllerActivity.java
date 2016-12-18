@@ -11,20 +11,30 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import inc.osips.bleproject.Interfaces.FragmentListner;
 import inc.osips.bleproject.R;
 import inc.osips.bleproject.Services.BleGattService;
 import inc.osips.bleproject.Utilities.ToastMessages;
 
-public class ControllerActivity extends AppCompatActivity implements FragmentListner {
+public class ControllerActivity extends FragmentActivity implements FragmentListner {
 
     private BleGattService gattService;
     private BluetoothDevice device;
     private ScanResult result;
+    private Fragment voiceFrag, manualFrag;
+    private Switch controlSwitch;
+    private TextView myDeviceName;
+    private volatile int flag =0;
+    FragmentTransaction fragmentTransaction;
 
     Handler commsHandler;
     private boolean mBound = false;
@@ -33,11 +43,51 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_controller);
         commsHandler = new Handler();
-        result = getIntent().getExtras()
-                .getParcelable("Device Data");
+        voiceFrag = new VoiceControlFragment();
+        manualFrag = new ButtonControlFragment();
 
+        if (findViewById(R.id.contentFragment) != null) {
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+            //result = getIntent().getExtras()
+            //        .getParcelable("Device Data");
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.contentFragment, manualFrag).commit();
+            initiatewidgets();
+        }
+    }
+
+    private void changeFragments(Fragment fragment){
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
+        fragmentTransaction.commit();
+    }
+
+    private void initiatewidgets (){
+
+                //(ButtonControlFragment)getSupportFragmentManager()
+                //.findFragmentById(R.id.fragmentButtonControl);
+        myDeviceName = (TextView)findViewById(R.id.textViewDeviceName);
+        controlSwitch = (Switch)findViewById(R.id.switchControl);
+        controlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    changeFragments(voiceFrag);
+                    //fragmentTransaction.detach(manualFrag);
+                    //fragmentTransaction.attach(voiceFrag);
+                }else {
+                    changeFragments(manualFrag);
+                    //fragmentTransaction.detach(voiceFrag);
+                    //fragmentTransaction.attach(manualFrag);
+                }
+            }
+        });
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -78,8 +128,8 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
         super.onStart();
         // Bind to LocalService
         Log.i(TAG, "starting service");
-        Intent intent = new Intent(this, BleGattService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        /*Intent intent = new Intent(this, BleGattService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);*/
     }
 
     @Override
@@ -156,6 +206,9 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
         return intentFilter;
     }
 
+    /*
+    * This gets called when any of the buttons on any fragment is pressed
+    */
     @Override
     public void sendInstructions(String instruct) {
 

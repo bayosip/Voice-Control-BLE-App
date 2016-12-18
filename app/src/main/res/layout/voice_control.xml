@@ -4,31 +4,33 @@
     android:layout_height="match_parent"
     android:background="@color/colorFragments">
 
-    <TextView
-        android:text="Click Button to Speak:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewInstruction"
-        android:layout_marginTop="25dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
     <ImageButton
         android:layout_width="85dp"
         android:layout_height="85dp"
         android:src="@drawable/ic_action_mic"
         android:id="@+id/buttonSpeak"
-        android:layout_marginTop="15dp"
-        android:layout_below="@+id/textViewInstruction"
+        android:elevation="3dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Click Button to Speak:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInstruction"
+        android:layout_above="@+id/buttonSpeak"
         android:layout_centerHorizontal="true"
-        android:elevation="3dp" />
+        android:layout_marginBottom="15dp"
+        android:textSize="24sp" />
 
     <TextView
         android:text="You said: "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:id="@+id/textViewInterpret"
         android:layout_below="@+id/buttonSpeak"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:textSize="18sp" />
+
 </RelativeLayout>

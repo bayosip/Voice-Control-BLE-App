@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_controller);
-        scanner = new Scan_n_Connection();
+        setContentView(R.layout.activity_main);
+        initiateWidets();
     }
 
     private void initiateWidets(){
@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scanner.onStart();
+                //scanner = new Scan_n_Connection();
+                //scanner.onStart();
+                startActivity(new Intent(MainActivity.this, ControllerActivity.class));
             }
         });
     }

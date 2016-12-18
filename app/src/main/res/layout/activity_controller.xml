@@ -8,27 +8,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/TechBackground"
+    android:background="@drawable/techbackground"
     tools:context="inc.osips.bleproject.Controller.MainActivity">
-
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="inc.osips.bleproject.Controller.VoiceControlFragment"
-        android:layout_below="@+id/switchVoice"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:id="@+id/fragmentVoiceControl"
-        tools:layout="@layout/voice_control" />
 
     <Switch
         android:text="Voice Control"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/switchVoice"
+        android:id="@+id/switchControl"
         android:background="@color/colorFragments"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="480dp"
+        android:background="@color/colorFragments"
+        android:id="@+id/contentFragment"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:text="..."
@@ -36,17 +34,11 @@
         android:background="@color/colorFragments"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/switchVoice"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/textViewDeviceName" />
+        android:id="@+id/textViewDeviceName"
+        android:layout_below="@+id/switchControl"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="17dp"
+        android:textSize="18sp" />
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="inc.osips.bleproject.Controller.ButtonControlFragment"
-        android:id="@+id/fragmentButtonControl"
-        tools:layout="@layout/manual_control"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
