@@ -6,68 +6,24 @@
     >
 
     <ImageButton
-        android:src="@drawable/ic_action_next"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/buttonNext"
-        android:layout_alignTop="@+id/buttonOnoff"
-        android:layout_toEndOf="@+id/buttonOnoff"
-        android:elevation="3dp" />
-
-    <ImageButton
-        android:src="@drawable/ic_action_back"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/buttonBack"
-        android:layout_alignTop="@+id/buttonOnoff"
-        android:layout_toStartOf="@+id/buttonOnoff"
-        android:elevation="3dp" />
-
-    <ImageButton
         android:src="@drawable/ic_action_light_off"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:id="@+id/buttonOnoff"
-        android:elevation="3dp"
+        android:elevation="5dp"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-    <ImageButton
-        android:src="@drawable/ic_action_dark"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/buttonDark"
-        android:elevation="3dp"
-        android:layout_below="@+id/buttonNext"
-        android:layout_toEndOf="@+id/buttonBack" />
-
-    <ImageButton
-        android:src="@drawable/ic_action_bright"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/buttonBright"
-        android:elevation="4dp"
-        android:layout_above="@+id/buttonBack"
-        android:layout_toEndOf="@+id/buttonBack" />
+        android:layout_centerHorizontal="true"
+        android:background="@color/buttonColor"/>
 
     <TextView
-        android:text="Next color"
-        android:rotation="90"
+        android:text="Brighten"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView5"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/buttonNext" />
-
-    <TextView
-        android:text="Prev. color"
-        android:rotation="90"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:layout_alignBaseline="@+id/textView5"
-        android:layout_alignBottom="@+id/textView5"
-        android:layout_toStartOf="@+id/buttonBack" />
+        android:id="@+id/textView"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/buttonBright"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/textColor"/>
 
     <TextView
         android:text="Dim"
@@ -77,15 +33,74 @@
         android:id="@+id/textView3"
         android:layout_below="@+id/buttonDark"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="17dp" />
+        android:layout_marginTop="20dp"
+        android:textColor="@color/textColor"/>
 
     <TextView
-        android:text="Brighten"
+        android:text="Next color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:layout_above="@+id/buttonBright"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="13dp" />
+        android:id="@+id/textView5"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="12dp"
+        android:layout_above="@+id/buttonNext"
+        android:layout_alignEnd="@+id/buttonNext"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:text="Prev. color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4"
+        android:layout_alignBaseline="@+id/textView5"
+        android:layout_alignBottom="@+id/textView5"
+        android:layout_toStartOf="@+id/buttonBright"
+        android:layout_marginEnd="25dp"
+        android:textColor="@color/textColor"/>
+
+    <ImageButton
+        android:src="@drawable/ic_action_dark"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:id="@+id/buttonDark"
+        android:elevation="5dp"
+        android:background="@color/buttonColor"
+        android:layout_marginTop="11dp"
+        android:layout_below="@+id/buttonOnoff"
+        android:layout_alignStart="@+id/buttonOnoff" />
+
+    <ImageButton
+        android:src="@drawable/ic_action_bright"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:id="@+id/buttonBright"
+        android:elevation="5dp"
+        android:background="@color/buttonColor"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignStart="@+id/buttonOnoff" />
+
+    <ImageButton
+        android:src="@drawable/ic_action_back"
+        android:layout_width="110dp"
+        android:layout_height="120dp"
+        android:id="@+id/buttonBack"
+        android:elevation="5dp"
+        android:background="@color/buttonColor"
+        android:padding="3dp"
+        android:layout_alignTop="@+id/buttonOnoff"
+        android:layout_toStartOf="@+id/buttonOnoff"
+        android:layout_marginEnd="10dp" />
+
+    <ImageButton
+        android:src="@drawable/ic_action_next"
+        android:layout_width="110dp"
+        android:layout_height="120dp"
+        android:id="@+id/buttonNext"
+        android:elevation="5dp"
+        android:background="@color/buttonColor"
+        android:padding="3dp"
+        android:layout_alignTop="@+id/buttonOnoff"
+        android:layout_toEndOf="@+id/buttonOnoff"
+        android:layout_marginStart="10dp" />
 
 </RelativeLayout>

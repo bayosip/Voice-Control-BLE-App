@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorAccent"
+    android:minHeight="@dimen/abc_action_bar_default_height_material"
+    tools:ignore="PrivateResource"
+    android:elevation="5dp">
 
-</Toolbar>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/buttonDisconnect"
+        android:textColor="@color/inputouput"
+        android:text="@string/disconnect_button_text"
+        android:background="@color/colorAccent2"
+        android:elevation="10dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/inputouput"
+        android:text="Instructions"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center"/>
+</android.support.v7.widget.Toolbar>

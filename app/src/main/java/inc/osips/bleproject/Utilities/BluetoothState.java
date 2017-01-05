@@ -11,7 +11,7 @@ import android.content.Intent;
 public class BluetoothState extends BroadcastReceiver {
 
     Context context;
-    ToastMessages toast;
+    UIEssentials toast;
 
     public BluetoothState(Context contxt){
         this.context = contxt;

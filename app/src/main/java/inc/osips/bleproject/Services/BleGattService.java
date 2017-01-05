@@ -10,21 +10,17 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.ParcelUuid;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 
-import inc.osips.bleproject.Utilities.ToastMessages;
+import inc.osips.bleproject.Utilities.UIEssentials;
 
 /**
  * Created by BABY v2.0 on 10/11/2016.
@@ -57,9 +53,9 @@ public class BleGattService extends Service {
     public final static String EXTRA_DATA = "inc.osips.bleproject.Services.BleGattService.EXTRA_DATA";
     public  String EXTRA_UUID;
 
-    public final String serviceUUID = "fe33e680-e20b-11e5-aa34-0002a5d5c51b";
-    public final String writeUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
-    public final String readUUID  = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
+    public final String serviceUUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    public final String writeUUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    public final String readUUID  = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
     int mydata;
     String MyLogData;
 
@@ -94,9 +90,6 @@ public class BleGattService extends Service {
      *         is reported asynchronously through the
      *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
      *         callback.
-     *public BLE_GATT_Service(Context context){
-    this.context = context;
-    }
      */
 
     /**
@@ -130,9 +123,7 @@ public class BleGattService extends Service {
 
         /**
          * This is called when service discovery has completed.
-         *
          * It broadcasts an update to the main activity.
-         *
          * @param gatt The GATT database object
          * @param status Status of whether the discovery was successful.
          */
@@ -185,7 +176,6 @@ public class BleGattService extends Service {
         /**
          * This is called when a characteristic with notify set changes.
          * It broadcasts an update to the main activity with the changed data.
-         *
          * @param gatt The GATT database object
          * @param characteristic The characteristic that was changed
          */
@@ -194,9 +184,7 @@ public class BleGattService extends Service {
                                             BluetoothGattCharacteristic characteristic) {
             // Get the UUID of the characteristic that changed
             String uuid = characteristic.getUuid().toString();
-
             mydata= characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32,0);
-
             // Tell the activity that new car data is available
             broadcastUpdate(ACTION_DATA_AVAILABLE);
         }
@@ -218,6 +206,7 @@ public class BleGattService extends Service {
     public boolean initialize() {
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
+        Log.i(TAG, "Initialising BLE");
         if (bManager == null) {
             bManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (bManager == null) {
@@ -267,13 +256,13 @@ public class BleGattService extends Service {
     public void disconnect() {
         if (bleGatt== null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            ToastMessages.message(getApplicationContext(), "No Device Connect!");
+            UIEssentials.message(getApplicationContext(), "No Device Connect!");
         }
         else {
             bleGatt.disconnect();
-            //close();
-            //bleGatt = null;
-            ToastMessages.message(getApplicationContext(), "Disconnecting...");
+            close();
+            bleGatt = null;
+            UIEssentials.message(getApplicationContext(), "Disconnecting...");
         }
     }
     /**
@@ -288,9 +277,22 @@ public class BleGattService extends Service {
     }
 
     public void writeLEDInstructions(String instruct) {
-        byte[] bytes = instruct.getBytes();
-        myWriteCharx.setValue(instruct);
-        writeCharacteristic(myWriteCharx);
+        try {
+            if (bleGatt != null) {
+                byte[] bytes = instruct.getBytes();
+                myWriteCharx.setValue(instruct);
+                writeCharacteristic(myWriteCharx);
+            }
+        }catch (NullPointerException e)
+        {
+            Log.w(TAG, "Characteristic is null: " + e.toString());
+            UIEssentials.getHandeler().post(new Runnable() {
+                @Override
+                public void run() {
+                    UIEssentials.message(getApplicationContext(), "Bluetooth error! Check Connection");
+                }
+            });
+        }
     }
 
     /**
@@ -299,14 +301,20 @@ public class BleGattService extends Service {
      * @param characteristic The characteristic to write.
      */
     private void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (bAdapter == null || bleGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        BleQueue.add(characteristic);
-        if (BleQueue.size() == 1) {
-            bleGatt.writeCharacteristic(characteristic);
-            Log.i(TAG, "Writing Characteristic");
+        try{
+            BleQueue.add(characteristic);
+            if (BleQueue.size() == 1) {
+                bleGatt.writeCharacteristic(characteristic);
+                Log.i(TAG, "Writing Characteristic");
+            }
+        }catch (NullPointerException e){
+            Log.w(TAG, "BluetoothAdapter not initialized: "+e.toString());
+            UIEssentials.getHandeler().post(new Runnable() {
+                @Override
+                public void run() {
+                    UIEssentials.message(getApplicationContext(), "Bluetooth error! Check Connection");
+                }
+            });
         }
     }
 

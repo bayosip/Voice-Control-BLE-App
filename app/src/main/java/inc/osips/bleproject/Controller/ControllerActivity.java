@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -23,9 +26,9 @@ import android.widget.TextView;
 import inc.osips.bleproject.Interfaces.FragmentListner;
 import inc.osips.bleproject.R;
 import inc.osips.bleproject.Services.BleGattService;
-import inc.osips.bleproject.Utilities.ToastMessages;
+import inc.osips.bleproject.Utilities.UIEssentials;
 
-public class ControllerActivity extends FragmentActivity implements FragmentListner {
+public class ControllerActivity extends AppCompatActivity implements FragmentListner {
 
     private BleGattService gattService;
     private BluetoothDevice device;
@@ -33,21 +36,36 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
     private Fragment voiceFrag, manualFrag;
     private Switch controlSwitch;
     private TextView myDeviceName;
-    private volatile int flag =0;
+    private Toolbar ctrlToolBar;
+    private Button disconnectButton;
     FragmentTransaction fragmentTransaction;
-
-    Handler commsHandler;
     private boolean mBound = false;
     private static final String TAG = ControllerActivity.class.getSimpleName();
+    private String deviceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
-        commsHandler = new Handler();
         voiceFrag = new VoiceControlFragment();
         manualFrag = new ButtonControlFragment();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        result = getIntent().getExtras()
+               .getParcelable("Device Data");
+            Log.i(TAG+"result", result.toString());
+            device =  result.getDevice();
+            deviceName = device.getName();
+            UIEssentials.message(getApplicationContext(), deviceName);
+        }
+        else {
+            device = getIntent().getExtras()
+                    .getParcelable("BLE Device");
+            deviceName = device.getName();
+        }
+
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
         if (findViewById(R.id.contentFragment) != null) {
             // However, if we're being restored from a previous state,
             // then we don't need to do anything and should return or else
@@ -55,12 +73,16 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
             if (savedInstanceState != null) {
                 return;
             }
-            //result = getIntent().getExtras()
-            //        .getParcelable("Device Data");
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contentFragment, manualFrag).commit();
             initiatewidgets();
         }
+        UIEssentials.getHandeler().post(new Runnable() {
+            @Override
+            public void run() {
+                myDeviceName.setText(deviceName);
+            }
+        });
     }
 
     private void changeFragments(Fragment fragment){
@@ -70,27 +92,44 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
     }
 
     private void initiatewidgets (){
+        ctrlToolBar = (Toolbar) findViewById(R.id.controlAppbar);
+        setSupportActionBar(ctrlToolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-                //(ButtonControlFragment)getSupportFragmentManager()
-                //.findFragmentById(R.id.fragmentButtonControl);
+        disconnectButton = (Button) findViewById(R.id.buttonDisconnect);
+        disconnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UIEssentials.getHandeler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mBound) {
+                            unbindService(mConnection);
+                            gattService = null;
+                            mBound = false;
+                            finish();
+                        }
+                    }
+                });
+            }
+        });
         myDeviceName = (TextView)findViewById(R.id.textViewDeviceName);
         controlSwitch = (Switch)findViewById(R.id.switchControl);
         controlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     changeFragments(voiceFrag);
-                    //fragmentTransaction.detach(manualFrag);
-                    //fragmentTransaction.attach(voiceFrag);
                 }else {
                     changeFragments(manualFrag);
-                    //fragmentTransaction.detach(voiceFrag);
-                    //fragmentTransaction.attach(manualFrag);
                 }
             }
         });
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
+    /*
+    * Defines callbacks for service binding, passed to bindService()
+    */
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -103,13 +142,12 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
                 getDEviceAndConnect();
             }
             else {
-                ToastMessages.message(getApplicationContext(), "API too low for app!");
+                UIEssentials.message(getApplicationContext(), "API too low for app!");
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            //gattService = null;
             mBound = false;
             startActivity(new Intent(ControllerActivity.this, MainActivity.class));
         }
@@ -128,13 +166,13 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
         super.onStart();
         // Bind to LocalService
         Log.i(TAG, "starting service");
-        /*Intent intent = new Intent(this, BleGattService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);*/
+        Intent intent = new Intent(this, BleGattService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
@@ -146,13 +184,13 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(commsUpdateReceiver);
+        unregisterReceiver(ctrlUpdateReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(commsUpdateReceiver, commsUpdateIntentFilter());
+        registerReceiver(ctrlUpdateReceiver, commsUpdateIntentFilter());
         if (gattService != null) {
             final boolean result = gattService.connect(device);
             Log.i(TAG, "Connect request result=" + result);
@@ -165,11 +203,12 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
             return;
         }
         else {
+            UIEssentials.message(getApplicationContext(), "Cannot Connect to Device");
             startActivity(new Intent (ControllerActivity.this, MainActivity.class));
         }
     }
 
-    private final BroadcastReceiver commsUpdateReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver ctrlUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
@@ -179,6 +218,16 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
                     break;
                 case BleGattService.ACTION_DISCONNECTED:
                     gattService.close();
+                    UIEssentials.getHandeler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mBound) {
+                                unbindService(mConnection);
+                                mBound = false;
+                                finish();
+                            }
+                        }
+                    });
                     break;
                 case BleGattService.ACTION_DATA_AVAILABLE:
                     // This is called after a Notify completes
@@ -195,7 +244,6 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
     /**
      * This sets up the filter for broadcasts that we want to be notified of.
      * This needs to match the broadcast receiver cases.
-     *
      * @return intentFilter
      */
     private static IntentFilter commsUpdateIntentFilter() {
@@ -205,13 +253,11 @@ public class ControllerActivity extends FragmentActivity implements FragmentList
         intentFilter.addAction(BleGattService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
-
     /*
     * This gets called when any of the buttons on any fragment is pressed
     */
     @Override
     public void sendInstructions(String instruct) {
-
         gattService.writeLEDInstructions(instruct);
     }
 }

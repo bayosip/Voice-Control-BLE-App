@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 
 import inc.osips.bleproject.Model.Scan_n_Connection;
 import inc.osips.bleproject.R;
-import inc.osips.bleproject.Utilities.ToastMessages;
+import inc.osips.bleproject.Utilities.UIEssentials;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,17 +20,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initiateWidets();
+        initiateWidets(this);
     }
 
-    private void initiateWidets(){
+    private void initiateWidets(final MainActivity ma){
         connectButton = (ImageButton)findViewById(R.id.buttonConnect);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //scanner = new Scan_n_Connection();
-                //scanner.onStart();
-                startActivity(new Intent(MainActivity.this, ControllerActivity.class));
+                scanner=null;
+                scanner = new Scan_n_Connection(ma);
+                scanner.onStart();
+                //startActivity(new Intent(MainActivity.this, ControllerActivity.class));
             }
         });
     }
@@ -41,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_ENABLE_BLE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                ToastMessages.message(getApplicationContext(),"Bluetooth On");
+                UIEssentials.message(getApplicationContext(),"Bluetooth On");
             }
             else if (resultCode == RESULT_CANCELED) {
-                ToastMessages.message(getApplicationContext(), "Please turn on Bluetooth");
+                UIEssentials.message(getApplicationContext(), "Please turn on Bluetooth");
             }
         }
     }

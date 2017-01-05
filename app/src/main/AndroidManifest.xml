@@ -16,17 +16,22 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        >
         <service android:name=".Services.BleGattService"
             android:enabled="true"
             android:exported="false"></service>
-        <activity android:name=".Controller.MainActivity">
+        <activity android:name=".Controller.MainActivity"
+            android:theme="@style/AppTheme.Base"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controller.ControllerActivity"></activity>
+        <activity android:name=".Controller.ControllerActivity"
+                  android:theme="@style/AppTheme"
+                  android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

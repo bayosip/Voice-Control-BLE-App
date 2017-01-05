@@ -5,13 +5,14 @@
     android:background="@color/colorFragments">
 
     <ImageButton
-        android:layout_width="85dp"
-        android:layout_height="85dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@drawable/ic_action_mic"
         android:id="@+id/buttonSpeak"
         android:elevation="3dp"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="@color/buttonColor"/>
 
     <TextView
         android:text="Click Button to Speak:"
@@ -21,7 +22,8 @@
         android:layout_above="@+id/buttonSpeak"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:textColor="@color/textColor"/>
 
     <TextView
         android:text="You said: "
@@ -31,6 +33,7 @@
         android:layout_below="@+id/buttonSpeak"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
 
 </RelativeLayout>

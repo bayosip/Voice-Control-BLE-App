@@ -16,7 +16,7 @@ import java.util.Locale;
 import inc.osips.bleproject.Interfaces.FragmentListner;
 import inc.osips.bleproject.Model.VoiceRecognition;
 import inc.osips.bleproject.R;
-import inc.osips.bleproject.Utilities.ToastMessages;
+import inc.osips.bleproject.Utilities.UIEssentials;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import static android.app.Activity.RESULT_OK;
@@ -55,7 +55,7 @@ public class VoiceControlFragment extends Fragment {
                     startActivityForResult(VoiceRecognition.speechInputCall(), 100);
 
                 }catch (ActivityNotFoundException e){
-                    ToastMessages.message(getContext(),e.getMessage());
+                    UIEssentials.message(getContext(),e.getMessage());
                 }
             }
         });
@@ -69,9 +69,18 @@ public class VoiceControlFragment extends Fragment {
                 if ((resultCode == RESULT_OK)&& (intent!=null)){
                     ArrayList<String> instructions = intent.getStringArrayListExtra(
                             RecognizerIntent.EXTRA_RESULTS);
-                    String toText = instructions.get(0).toLowerCase(Locale.getDefault());
-                    fragListner.sendInstructions(toText);
-                    interpretedText.setText("You said: " + toText);
+                    final String toText = instructions.get(0).toLowerCase(Locale.getDefault());
+                    if (toText.toLowerCase().contains("on"))
+                        fragListner.sendInstructions("on");
+                    else if (toText.toLowerCase().contains("off"))
+                        fragListner.sendInstructions("off");
+                    else fragListner.sendInstructions(toText);
+                    UIEssentials.getHandeler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            interpretedText.setText("You said: " + toText);
+                        }
+                    });
 
                 }
                 break;

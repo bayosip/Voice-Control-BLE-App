@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/techbackground"
-    tools:context="inc.osips.bleproject.Controller.ControllerActivity">
+    tools:context="inc.osips.bleproject.Controller.MainActivity">
 
     <TextView
         android:text="@string/app_instructions"
@@ -28,5 +28,6 @@
         android:id="@+id/buttonConnect"
         android:elevation="7dp"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="@color/buttonColor"/>
 </RelativeLayout>

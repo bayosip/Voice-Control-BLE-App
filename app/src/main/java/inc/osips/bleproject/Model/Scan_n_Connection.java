@@ -1,5 +1,6 @@
 package inc.osips.bleproject.Model;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -12,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -23,47 +23,41 @@ import java.util.UUID;
 import inc.osips.bleproject.Controller.ControllerActivity;
 import inc.osips.bleproject.Controller.MainActivity;
 import inc.osips.bleproject.Utilities.HW_Compatibility_Checker;
-import inc.osips.bleproject.Utilities.ToastMessages;
+import inc.osips.bleproject.Utilities.UIEssentials;
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Scan_n_Connection {
 
     private BluetoothAdapter bleAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
     private BluetoothDevice bleDevice;
-    private Handler scanHandler;
     private ScanSettings settings;
     private List<ScanFilter> filters;
     private MainActivity ma;
 
     private boolean scanState;
-    private String deviceName = "Bayo's BLE-LED Controller";
-    private final String baseUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
+    private String deviceName = "Osi_p BLE-LED Controller";
+    private final String baseUUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     private Bundle extras;
     private ParcelUuid uuidParcel;
     //UUID uuid;
 
-    public Scan_n_Connection(){
-        ma = new MainActivity();
-        scanHandler = new Handler();
+    public Scan_n_Connection(MainActivity activity){
+        ma = activity;
         // dbAdapter = new DatabaseAdapter(ma.getApplicationContext());
-        final BluetoothManager manager = (BluetoothManager) ma.getSystemService(
+        final BluetoothManager manager = (BluetoothManager) activity.getSystemService(
                 Context.BLUETOOTH_SERVICE);
 
         bleAdapter = manager.getAdapter();
         extras = new Bundle();
         uuidParcel = new ParcelUuid(UUID.fromString(baseUUID));
 
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             bluetoothLeScanner = bleAdapter.getBluetoothLeScanner();
             settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .build();
         }
-
-    }
-
-    public Handler getHandler() {
-        return scanHandler;
     }
 
     public boolean isScanning() {
@@ -96,7 +90,7 @@ public class Scan_n_Connection {
                 filters.add(myDevice);
             }
             //start scan
-            scanHandler.postDelayed(new Runnable() {
+            UIEssentials.getHandeler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     scanState = false;
@@ -115,7 +109,7 @@ public class Scan_n_Connection {
             }
         }
         else{
-        ToastMessages.message(ma.getApplicationContext(), "Scanning Stopped!");
+        UIEssentials.message(ma.getApplicationContext(), "Scanning Stopped!");
         }
     }
 
@@ -130,7 +124,7 @@ public class Scan_n_Connection {
             Log.i("result", result.toString());
             final int RSSI = result.getRssi();
             if (RSSI>=-105) {
-                scanHandler.post(new Runnable() {
+                UIEssentials.getHandeler().post(new Runnable() {
                     @Override
                     public void run() {
                        ma.startActivity(new Intent(ma, ControllerActivity.class)
@@ -159,12 +153,12 @@ public class Scan_n_Connection {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
                     final int RSSI = rssi;
-                    if (RSSI >= -85){
-                        scanHandler.post(new Runnable() {
+                    if (RSSI >= -105){
+                        UIEssentials.getHandeler().post(new Runnable() {
                             @Override
                             public void run() {
-                              //  ma.startActivity(new Intent(ma, CommunicationActivity.class)
-                               //         .putExtra("Device Name", device));
+                                ma.startActivity(new Intent(ma, ControllerActivity.class)
+                                        .putExtra("BLE Device", device));
                             }
                         });
                     }
