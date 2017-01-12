@@ -320,7 +320,7 @@ void fadeOn (int color){
   			lightUpLed(color, brightness);
   			brightness = brightness + fadeAmount;
 
-  		// reverse the direction of the fading at the ends of the fade: 
+  		// break out once at full brightness:
 		if (brightness == ADC) {
     		break;
   		}

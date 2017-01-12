@@ -2,6 +2,7 @@ package inc.osips.bleproject.Utilities;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 /**
@@ -15,7 +16,7 @@ public class UIEssentials {
     private static Handler uiHandler;
 
     static {
-        uiHandler = new Handler();
+        uiHandler = new Handler(Looper.getMainLooper());
     }
 
 

@@ -1,10 +1,7 @@
 package inc.osips.bleproject.Interfaces;
 
-/**
- * Created by BABY v2.0 on 12/14/2016.
- */
-
 public interface FragmentListner {
 
-    public void sendInstructions (String instruct);
+    public void sendInstructions (String instruct);//function takes string command and passes
+                                                    //it to the gat service
 }

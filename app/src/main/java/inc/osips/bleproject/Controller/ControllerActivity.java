@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
+import android.speech.SpeechRecognizer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -39,6 +40,7 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
     private Toolbar ctrlToolBar;
     private Button disconnectButton;
     FragmentTransaction fragmentTransaction;
+
     private boolean mBound = false;
     private static final String TAG = ControllerActivity.class.getSimpleName();
     private String deviceName;

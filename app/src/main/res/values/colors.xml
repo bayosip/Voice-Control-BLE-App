@@ -9,4 +9,5 @@
     <color name="inputouput">#FFFFFF</color>
     <color name="textColor">#898289</color>
     <color name="buttonColor">#b3b6bc</color>
+    <color name="popup">#ebefea</color>
 </resources>

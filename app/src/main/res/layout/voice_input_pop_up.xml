@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/popup">
+
+    <TextView
+        android:text="@string/voice_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView6"
+        android:gravity="center"
+        android:textColor="@color/textColor"
+        android:textSize="25sp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:text="@string/speak_now"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/textColor"
+        android:id="@+id/textView7"
+        android:layout_marginTop="21dp"
+        android:layout_below="@+id/textView6"
+        android:layout_alignParentStart="true"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/image"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/imageViewMic"
+        android:layout_below="@+id/textView7"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/speak" />
+</RelativeLayout>

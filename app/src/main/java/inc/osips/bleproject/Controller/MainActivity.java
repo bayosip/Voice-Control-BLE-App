@@ -1,5 +1,6 @@
 package inc.osips.bleproject.Controller;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,12 +29,31 @@ public class MainActivity extends AppCompatActivity {
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scanner=null;
-                scanner = new Scan_n_Connection(ma);
-                scanner.onStart();
+                launchRingDialog( ma);
                 //startActivity(new Intent(MainActivity.this, ControllerActivity.class));
             }
         });
+    }
+
+    public void launchRingDialog(final MainActivity ma) {
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(MainActivity.this,
+                "Please wait ...", "Connecting ...", true);
+        ringProgressDialog.setCancelable(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    scanner=null;
+                    scanner = new Scan_n_Connection(ma);
+                    scanner.onStart();
+                    Thread.sleep(10000);
+                } catch (Exception e) {
+                    UIEssentials.message(getApplicationContext(),
+                            "Cannot Scan for bluetooth le device");
+                }
+                ringProgressDialog.dismiss();
+            }
+        }).start();
     }
 
     @Override
