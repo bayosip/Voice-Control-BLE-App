@@ -277,7 +277,7 @@ void changeToNextColor (void){
 void changeToPreviousColor (void){
 	if (ledState ==1){
 		fadeOff(currentColor);
-  		if (--currentColor ==0 ) currentColor = NUM_COLORS;
+  		if (--currentColor <0 ) currentColor = 6;
   		fadeOn(currentColor);}
   			else {
   			Serial.println(F("LED not on!!!"));
@@ -286,32 +286,33 @@ void changeToPreviousColor (void){
 
 void dimLights(void){
 	if (ledState ==1){
-	if (brightness >1){
+	while (brightness >1){
   			lightUpLed(currentColor, brightness);
-  			brightness = brightness >>3;
-  		// reverse the direction of the fading at the ends of the fade: 
-		if (brightness == 1) {}     
+  			brightness = brightness >>1;
+  		// break of at lowest intensity
+		if (brightness == 1)break;
+		delay(25);
 			}
 	}
   			else {
   			Serial.println(F("LED not on!!!"));
   		}
-  		delay(25);
 }
 
 void brightenLights(void){
 	if (ledState ==1){
-		if (brightness < ADC){
+		while(brightness < ADC){
   			lightUpLed(currentColor, brightness);
-  			brightness = brightness <<3;
-  		// reverse the direction of the fading at the ends of the fade: 
-			if (brightness == ADC) {}
+  			brightness = brightness <<1;
+
+  		// break off at max intensity:
+			if (brightness == ADC) break;
+			delay(25);
 		}
 	}
   			else {
   			Serial.println(F("LED not on!!!"));
   		}
-  		delay(25);
 }
 
 void fadeOn (int color){
