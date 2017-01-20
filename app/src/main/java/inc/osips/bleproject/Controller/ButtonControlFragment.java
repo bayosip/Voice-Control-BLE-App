@@ -58,7 +58,7 @@ public class ButtonControlFragment extends Fragment {
                     instruct = "On/Off";
                     break;
                 case R.id.buttonDark:
-                    instruct = "Dark";
+                    instruct = "Dim";
                     break;
                 case R.id.buttonBright:
                     instruct = "Bright";

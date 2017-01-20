@@ -21,11 +21,10 @@ public class UIEssentials {
 
 
     public static void  message (Context context,String message){
-
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static Handler getHandeler(){
+    public static Handler getHandler(){
         return uiHandler;
     }
 

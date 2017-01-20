@@ -286,7 +286,7 @@ public class BleGattService extends Service {
         }catch (NullPointerException e)
         {
             Log.w(TAG, "Characteristic is null: " + e.toString());
-            UIEssentials.getHandeler().post(new Runnable() {
+            UIEssentials.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     UIEssentials.message(getApplicationContext(), "Bluetooth error! Check Connection");
@@ -309,7 +309,7 @@ public class BleGattService extends Service {
             }
         }catch (NullPointerException e){
             Log.w(TAG, "BluetoothAdapter not initialized: "+e.toString());
-            UIEssentials.getHandeler().post(new Runnable() {
+            UIEssentials.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     UIEssentials.message(getApplicationContext(), "Bluetooth error! Check Connection");

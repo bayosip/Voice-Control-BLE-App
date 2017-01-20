@@ -118,7 +118,7 @@ public class VoiceControlFragment extends VoiceRecognitionImpl implements Recogn
         else if (commands.toLowerCase().contains("off"))
             fragListner.sendInstructions("off");
         else fragListner.sendInstructions(commands);
-        UIEssentials.getHandeler().post(new Runnable() {
+        UIEssentials.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 interpretedText.setText("You said: " + commands);

@@ -1,5 +1,6 @@
 package inc.osips.bleproject.Controller;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
@@ -10,9 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
-import android.speech.SpeechRecognizer;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -77,9 +76,9 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
             }
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contentFragment, manualFrag).commit();
-            initiatewidgets();
+            initiateWidgets();
         }
-        UIEssentials.getHandeler().post(new Runnable() {
+        UIEssentials.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 myDeviceName.setText(deviceName);
@@ -93,7 +92,8 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
         fragmentTransaction.commit();
     }
 
-    private void initiatewidgets (){
+    @Override
+    public void initiateWidgets(){
         ctrlToolBar = (Toolbar) findViewById(R.id.controlAppbar);
         setSupportActionBar(ctrlToolBar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -103,7 +103,7 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
         disconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UIEssentials.getHandeler().post(new Runnable() {
+                UIEssentials.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         if (mBound) {
@@ -220,7 +220,7 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
                     break;
                 case BleGattService.ACTION_DISCONNECTED:
                     gattService.close();
-                    UIEssentials.getHandeler().post(new Runnable() {
+                    UIEssentials.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             if (mBound) {
@@ -261,5 +261,10 @@ public class ControllerActivity extends AppCompatActivity implements FragmentLis
     @Override
     public void sendInstructions(String instruct) {
         gattService.writeLEDInstructions(instruct);
+    }
+
+    @Override
+    public Activity getCurrentActivity() {
+        return this;
     }
 }

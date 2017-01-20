@@ -1,6 +1,7 @@
 package inc.osips.bleproject.Model;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -21,19 +22,19 @@ import java.util.List;
 import java.util.UUID;
 
 import inc.osips.bleproject.Controller.ControllerActivity;
-import inc.osips.bleproject.Controller.MainActivity;
+import inc.osips.bleproject.Interfaces.Scanner;
 import inc.osips.bleproject.Utilities.HW_Compatibility_Checker;
 import inc.osips.bleproject.Utilities.UIEssentials;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class Scan_n_Connection {
+public class Scan_n_Connection implements Scanner{
 
     private BluetoothAdapter bleAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
     private BluetoothDevice bleDevice;
     private ScanSettings settings;
     private List<ScanFilter> filters;
-    private MainActivity ma;
+    private Activity ma;
 
     private boolean scanState;
     private String deviceName = "Osi_p BLE-LED Controller";
@@ -42,7 +43,7 @@ public class Scan_n_Connection {
     private ParcelUuid uuidParcel;
     //UUID uuid;
 
-    public Scan_n_Connection(MainActivity activity){
+    public Scan_n_Connection(Activity activity){
         ma = activity;
         // dbAdapter = new DatabaseAdapter(ma.getApplicationContext());
         final BluetoothManager manager = (BluetoothManager) activity.getSystemService(
@@ -90,7 +91,7 @@ public class Scan_n_Connection {
                 filters.add(myDevice);
             }
             //start scan
-            UIEssentials.getHandeler().postDelayed(new Runnable() {
+            UIEssentials.getHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     scanState = false;
@@ -100,7 +101,7 @@ public class Scan_n_Connection {
                         scanStop();
                     }
                 }
-            }, 5000);
+            }, 10000);
             scanState = true;
             if (Build.VERSION.SDK_INT < 21) {
                 bleAdapter.startLeScan(scanCallBackLe);
@@ -109,11 +110,13 @@ public class Scan_n_Connection {
             }
         }
         else{
-        UIEssentials.message(ma.getApplicationContext(), "Scanning Stopped!");
+            scanStop();
+            UIEssentials.message(ma.getApplicationContext(), "Scanning Stopped!");
         }
     }
 
     private void scanStop() {
+        if(bluetoothLeScanner != null)
         bluetoothLeScanner.stopScan(mScanCallback);
     }
 
@@ -124,7 +127,7 @@ public class Scan_n_Connection {
             Log.i("result", result.toString());
             final int RSSI = result.getRssi();
             if (RSSI>=-105) {
-                UIEssentials.getHandeler().post(new Runnable() {
+                UIEssentials.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
                        ma.startActivity(new Intent(ma, ControllerActivity.class)
@@ -154,7 +157,7 @@ public class Scan_n_Connection {
                 public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
                     final int RSSI = rssi;
                     if (RSSI >= -105){
-                        UIEssentials.getHandeler().post(new Runnable() {
+                        UIEssentials.getHandler().post(new Runnable() {
                             @Override
                             public void run() {
                                 ma.startActivity(new Intent(ma, ControllerActivity.class)
